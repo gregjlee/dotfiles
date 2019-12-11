@@ -19,7 +19,7 @@
 "source $VIMRUNTIME/defaults.vim
 
 "color scheme
-colorscheme darkblue
+"colorscheme darkblue
 
 let mapleader = " "
 set showcmd
@@ -108,8 +108,8 @@ Plug 'vim-scripts/vim-auto-save'
 "file browsing
 Plug 'scrooloose/nerdtree'
 
-"commenting out 
-"Plug 'tpope/vim-commentary'
+"commenting out code 
+Plug 'tpope/vim-commentary'
 
 "Git
 Plug 'tpope/vim-fugitive'
@@ -142,7 +142,12 @@ Plug 'prettier/vim-prettier', {
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 "todo add vim-commentary for commenting
+Plug 'altercation/vim-colors-solarized' "color theme
 call plug#end()
+
+syntax enable
+set background=dark
+colorscheme solarized "set solarized scheme
 
 "NerdTree
 autocmd vimenter * NERDTree
