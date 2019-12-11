@@ -1,0 +1,24 @@
+let mapleader = " "
+set showcmd
+inoremap jk <ESC>
+set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
+set number
+
+"set splitbelow
+"set splitright
+" Quicker window movement
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+" In insert or command mode, move normally by using Ctrl
+"inoremap <C-h> <Left> backspace needs to be remapped for this to work
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+
+cnoremap <C-j> <Down>
+cnoremap <C-k> <Up>
+cnoremap <C-l> <Right>
+"status line
+set statusline+=%F
