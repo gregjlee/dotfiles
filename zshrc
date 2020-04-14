@@ -16,6 +16,9 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(root_indicator)
 # change fzf to use ripgrep. fzf is used by vim
 export FZF_DEFAULT_COMMAND='rg --files --follow --hidden'
 
+# Using highlight (http://www.andre-simon.de/doku/highlight/en/highlight.html)
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in ~/.oh-my-zsh/themes/

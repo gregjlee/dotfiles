@@ -1,9 +1,12 @@
 let mapleader = " "
 set showcmd
 inoremap jk <ESC>
+vnoremap jk <ESC>
 set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
 set number
 
+"set number
+set relativenumber
 "set splitbelow
 "set splitright
 " Quicker window movement

@@ -1,34 +1,26 @@
 
-" An example for a vimrc file.
-"
-" Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last change:	2017 Sep 20
-"
-" To use it, copy it to
-"     for Unix and OS/2:  ~/.vimrc
-"	      for Amiga:  s:.vimrc
-"  for MS-DOS and Win32:  $VIM\_vimrc
-"	    for OpenVMS:  sys$login:.vimrc
-
-" When started as "evim", evim.vim will already have done these settings.
-"if v:progname =~? "evim"
-"  finish
-"endif
-
-" Get the defaults that most users want.
-"source $VIMRUNTIME/defaults.vim
-
-"color scheme
-"colorscheme darkblue
-
 let mapleader = " "
 set showcmd
 inoremap jk <ESC>
 set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
+"set hybrid relative with absolute number on the cursor line
+set relativenumber
 set number
 
 "yank -> system clipboard
 set clipboard=unnamed
+
+"ignore case when searching
+set incsearch       " Find the next match as we type the search
+set hlsearch        " Highlight searches by default
+set ignorecase      " Ignore case when searching...
+set smartcase       " ...unless we type a capital
+"turn off highlight 
+nnoremap <silent> <CR> :noh<CR><CR>    
+"replace all(with prompt) of current word
+nnoremap <leader>r yiw:%s/\<<C-r>"\>//gc<left><left><left>
+vnoremap <leader>r y:%s/<C-r>"//gc<left><left><left>
+
 
 "central folder for swap files
 set directory^=$HOME/.vim/tmp//
@@ -113,7 +105,7 @@ Plug 'tpope/vim-commentary'
 
 "Git
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rhubarb'
+"Plug 'tpope/vim-rset smartcasehubarb'
 
 "a collection of language packs
 Plug 'sheerun/vim-polyglot'
@@ -128,11 +120,19 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 "linting
 Plug 'dense-analysis/ale'
+" {{{
+  let g:ale_fixers = {
+        \ 'javascript': ['eslint']
+        \}
+  let g:ale_sign_error = '❌'
+  let g:ale_sign_warning = '⚠️'
+  let g:ale_fix_on_save = 1
+" }}}
 
 "Prettier js code styling
-Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install',
-  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
+" Plug 'prettier/vim-prettier', {
+"   \ 'do': 'yarn install',
+"   \ 'for': ['css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
 
 "auto add closing brackets, parenthesis, and tags
 "Plug 'tpope/vim-surround' - manipulate surroundings, too advanced for now
@@ -141,13 +141,38 @@ Plug 'prettier/vim-prettier', {
 "Project wide fuzzy file and code search
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+" {{{
+  nnoremap <silent> <leader><space> :FZF<CR>
+  nnoremap <silent> <leader>a :Buffers<CR>
+  nnoremap <silent> <leader>A :Windows<CR>
+  nnoremap <silent> <leader>f :BLines<CR>
+  nnoremap <silent> <leader>o :BTags<CR>
+  nnoremap <silent> <leader>O :Tags<CR>
+  nnoremap <silent> <leader>? :History<CR>
+  nnoremap <silent> <leader>F :Rg<CR> 
+
+" Enable per-command history.
+" CTRL-N and CTRL-P will be automatically bound to next-history and
+" previous-history instead of down and up. If you don't like the change,
+" explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+" }}}
+
 "todo add vim-commentary for commenting
-Plug 'altercation/vim-colors-solarized' "color theme
+"Plug 'altercation/vim-colors-solarized' "color theme
+"color theme
+Plug 'rakr/vim-one' "color theme
+" {{{
+" use true colors
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+set background=dark 
+" set background=light 
+" }}}
 call plug#end()
 
-syntax enable
-set background=dark
-colorscheme solarized "set solarized scheme
+colorscheme one
 
 "NerdTree
 autocmd vimenter * NERDTree
@@ -158,63 +183,17 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 "open/close nerdtree window
 nnoremap <Leader>n :NERDTreeToggle<CR> 
 "this is the key to jump to the nerdtree window from any other window
-nnoremap <Leader>r :NERDTreeFind<CR> 
+nnoremap <Leader>N :NERDTreeFind<CR> 
 
 "fzf
-nnoremap <C-p> :FZF<CR>
-nnoremap <Leader>F :Rg<CR>
-nnoremap <Leader>b :Buffers<CR>
-nnoremap <Leader>h :History<CR>
-nnoremap <Leader>t :BTags<CR>
-nnoremap <Leader>T :Tags<CR>
-" Enable per-command history.
-" CTRL-N and CTRL-P will be automatically bound to next-history and
-" previous-history instead of down and up. If you don't like the change,
-" explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
-let g:fzf_history_dir = '~/.local/share/fzf-history'
 
 "Enable Autosave
-let g:auto_save = 1
+let g:auto_save = 0
 let g:auto_save_in_insert_mode = 0  " do not save while in insert mode
 
+" Keep search results at the center of screen
+nmap n nzz
+nmap N Nzz
 
-"if has("vms") set nobackup		" do not keep a backup file, use versions instead
-"else
-"  set backup		" keep a backup file (restore to previous version)
-"  if has('persistent_undo')
-"    set undofile	" keep an undo file (undo changes after closing)
-"  endif
-"endif
-
-"if &t_Co > 2 || has("gui_running")
-  " Switch on highlighting the last used search pattern.
-"  set hlsearch
-"endif
-
-" Only do this part when compiled with support for autocommands.
-"if has("autocmd")
-"
-"  " Put these in an autocmd group, so that we can delete them easily.
-"  augroup vimrcEx
-"  au!
-"
-"  " For all text files set 'textwidth' to 78 characters.
-"  autocmd FileType text setlocal textwidth=78
-"
-"  augroup END
-
-"else
-"
-"  set autoindent		" always set autoindenting on
-"
-"endif " has("autocmd")
-
-" Add optional packages.
-"
-" The matchit plugin makes the % command work better, but it is not backwards
-" compatible.
-" The ! means the package won't be loaded right away but when plugins are
-" loaded during initialization.
-"if has('syntax') && has('eval')
-"  packadd! matchit
-"endif
+" Quick way to save file
+nnoremap <leader>w :w<CR>
