@@ -56,7 +56,7 @@ set mouse=a
 set statusline+=%F
 
 "Autocomplete cocnvim
-" use <tab> for trigger completion and navigate to the next complete item
+"use <tab> for trigger completion and navigate to the next complete item
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~ '\s'
@@ -105,6 +105,9 @@ Plug 'tpope/vim-commentary'
 
 "Git
 Plug 'tpope/vim-fugitive'
+
+"Github
+Plug 'tpope/vim-rhubarb'
 "Plug 'tpope/vim-rset smartcasehubarb'
 
 "a collection of language packs
@@ -114,9 +117,19 @@ Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-rails'
 "Plug 'tpope/vim-bundler' -slow?
 "Plug 'tpope/vim-dispatch' - slow?
+Plug 'thoughtbot/vim-rspec'
+" RSpec.vim mappings
+map <Leader>t :call RunCurrentSpecFile()<CR>
+map <Leader>s :call RunNearestSpec()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <Leader>a :call RunAllSpecs()<CR>
+let g:rspec_command = "!bundle exec rspec {spec}"
+
 
 "intellisense with language extensions
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" make sure to use nodejs version 11 or higher for speed
+
 
 "linting
 Plug 'dense-analysis/ale'
@@ -126,7 +139,14 @@ Plug 'dense-analysis/ale'
         \}
   let g:ale_sign_error = '❌'
   let g:ale_sign_warning = '⚠️'
+  " for performance only lint on save
   let g:ale_fix_on_save = 1
+  let g:ale_lint_on_text_changed = 'never'
+  let g:ale_lint_on_insert_leave = 0
+" You can disable this option too
+" if you don't want linters to run on opening a file
+  let g:ale_lint_on_enter = 0
+
 " }}}
 
 "Prettier js code styling
@@ -142,7 +162,7 @@ Plug 'dense-analysis/ale'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 " {{{
-  nnoremap <silent> <leader><space> :FZF<CR>
+  nnoremap <silent> <leader><space> :Files<CR>
   nnoremap <silent> <leader>a :Buffers<CR>
   nnoremap <silent> <leader>A :Windows<CR>
   nnoremap <silent> <leader>f :BLines<CR>
@@ -156,6 +176,7 @@ Plug 'junegunn/fzf.vim'
 " previous-history instead of down and up. If you don't like the change,
 " explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
 let g:fzf_history_dir = '~/.local/share/fzf-history'
+let g:fzf_layout = {'window': 'vertical new'}
 " }}}
 
 "todo add vim-commentary for commenting
@@ -167,8 +188,8 @@ Plug 'rakr/vim-one' "color theme
   if (has("termguicolors"))
     set termguicolors
   endif
-set background=dark 
-" set background=light 
+"set background=dark 
+ set background=light 
 " }}}
 call plug#end()
 
@@ -188,7 +209,7 @@ nnoremap <Leader>N :NERDTreeFind<CR>
 "fzf
 
 "Enable Autosave
-let g:auto_save = 0
+let g:auto_save = 0 "turned off autosave as it was going to slow with auto formatting
 let g:auto_save_in_insert_mode = 0  " do not save while in insert mode
 
 " Keep search results at the center of screen

@@ -10,3 +10,5 @@ Create symlinks
 
     ln -s ~/.dotfiles/zshrc ~/.zshrc
     ln -s ~/.dotfiles/vimrc ~/.vimrc
+    ln -s ~/.dotfiles/xvimrc ~/.xvimrc
+    ln -s ~/.dotfiles/pryrc ~/.pryrc

@@ -140,10 +140,12 @@ alias gullom='git pull origin master'
 alias gm="git merge"
 alias gash="git stash"
 alias gog="git log --pretty=format:\"%h - %an, %ar : %s\""
+# alias gprune='git branch --merged master | grep -v '^[ *]*master$' | xargs git branch -d'
 
+
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 . /usr/local/opt/asdf/asdf.sh
 
 . /usr/local/opt/asdf/etc/bash_completion.d/asdf.bash
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
