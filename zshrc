@@ -109,8 +109,14 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh" eval "$(direnv hook zsh)"
-# load rbenv automatically
-eval "$(rbenv init - zsh)"
+
+# iterm2 switch color presets
+it2dark() { echo -e "\033]50;SetProfile=Dark\a";  }
+it2light() { echo -e "\033]50;SetProfile=Light\a";  }
+
+# direnv
+eval "$(direnv hook zsh)"
+
 
 #Envoy Hotel
 alias hotel_restart="sudo launchctl unload /Library/LaunchDaemons/hotel.plist && sudo launchctl load /Library/LaunchDaemons/hotel.plist"
@@ -120,8 +126,26 @@ alias hotel_start="sudo launchctl load /Library/LaunchDaemons/hotel.plist"
 alias be="bundle exec"
 alias brails="bin/rails"
 
+#Rubocop -> check only changed ruby files
+alias rubocop_changed="git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs bundle exec rubocop"
+alias rbc="git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs bundle exec rubocop"
+#StandardRb -> check only changed ruby files
+alias standard_changed="git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs bundle exec standardrb"
+alias stdc="git ls-files -m | xargs ls -1 2>/dev/null | grep '\.rb$' | xargs bundle exec standardrb"
+
 #Envoy Graphql
 alias gql_update="bundle exec rake graphql:schema:idl"
+
+#Envoy web
+alias heroku_eweb_production="heroku run rails c -a envoy-web"
+alias her_prod="heroku run rails c -a envoy-web"
+alias heroku_eweb_staging="heroku run rails console -a envoy-web-staging"
+alias her_staging="heroku run rails console -a envoy-web-staging"
+# reset db changes from extensions
+alias gcodb="git checkout db/structure.sql"
+
+#Envoy billing
+alias heroku_billing_staging="heroku run rails console -a envoy-billing-staging"
 
 #Git
 alias g='git'

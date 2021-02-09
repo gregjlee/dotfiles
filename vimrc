@@ -1,4 +1,3 @@
-
 let mapleader = " "
 set showcmd
 inoremap jk <ESC>
@@ -53,7 +52,26 @@ cnoremap <C-l> <Right>
 set mouse=a
 
 "status line
-set statusline+=%F
+" configure to show ALELinter status counts
+function! LinterStatus() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+
+  return l:counts.total == 0 ? '' : printf(
+        \   '%d⚠️ %d❌',
+        \   all_non_errors,
+        \   all_errors
+        \)
+endfunction
+
+set statusline=
+set statusline+=%m
+set statusline+=\ %f
+set statusline+=%=
+set statusline+=\ %{LinterStatus()}
+
 
 "Autocomplete cocnvim
 "use <tab> for trigger completion and navigate to the next complete item
@@ -68,7 +86,11 @@ inoremap <silent><expr> <Tab>
       \ coc#refresh()
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" don't enable <CR> selection when no item as been selected
+" as that will conflict btw cocnvim and vim-endwise
+"https://github.com/tpope/vim-endwise/issues/125
+
 
 " coc.nvim goto definition keys
 nmap <silent> gd <Plug>(coc-definition)
@@ -109,20 +131,25 @@ Plug 'tpope/vim-fugitive'
 "Github
 Plug 'tpope/vim-rhubarb'
 "Plug 'tpope/vim-rset smartcasehubarb'
+"Open github page with lines/blame
+Plug 'ruanyl/vim-gh-line'
 
 "a collection of language packs
 Plug 'sheerun/vim-polyglot'
 
 "rails tools
 Plug 'tpope/vim-rails'
+"adds end to ruby methods
+Plug 'tpope/vim-endwise' 
 "Plug 'tpope/vim-bundler' -slow?
 "Plug 'tpope/vim-dispatch' - slow?
 Plug 'thoughtbot/vim-rspec'
 " RSpec.vim mappings
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>s :call RunNearestSpec()<CR>
-map <Leader>l :call RunLastSpec()<CR>
-map <Leader>a :call RunAllSpecs()<CR>
+" not that useful yet
+" map <Leader>t :call RunCurrentSpecFile()<CR>
+" map <Leader>s :call RunNearestSpec()<CR>
+" map <Leader>l :call RunLastSpec()<CR>
+" map <Leader>a :call RunAllSpecs()<CR>
 let g:rspec_command = "!bundle exec rspec {spec}"
 
 
@@ -135,8 +162,14 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'dense-analysis/ale'
 " {{{
   let g:ale_fixers = {
-        \ 'javascript': ['eslint']
+        \ 'javascript': ['eslint'],
+        \ 'ruby': ['standardrb', 'trim_whitespace'],
         \}
+  let g:ale_linters = {
+        \ 'javascript': ['eslint'],
+        \ 'ruby': ['standardrb', 'rubocop'],
+        \}
+  let g:ale_ruby_rubocop_executable = 'bundle' "use bundler managed rubocop
   let g:ale_sign_error = '❌'
   let g:ale_sign_warning = '⚠️'
   " for performance only lint on save
@@ -146,6 +179,10 @@ Plug 'dense-analysis/ale'
 " You can disable this option too
 " if you don't want linters to run on opening a file
   let g:ale_lint_on_enter = 0
+
+  " shortcuts for error navigation
+  " nmap <silent> Aj <Plug>(ale_previous_wrap)
+  " nmap <silent> Aj <Plug>(ale_next_wrap)
 
 " }}}
 
@@ -162,14 +199,14 @@ Plug 'dense-analysis/ale'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 " {{{
-  nnoremap <silent> <leader><space> :Files<CR>
+  nnoremap <silent> <leader><space> :Files!<CR>
   nnoremap <silent> <leader>a :Buffers<CR>
   nnoremap <silent> <leader>A :Windows<CR>
   nnoremap <silent> <leader>f :BLines<CR>
   nnoremap <silent> <leader>o :BTags<CR>
   nnoremap <silent> <leader>O :Tags<CR>
   nnoremap <silent> <leader>? :History<CR>
-  nnoremap <silent> <leader>F :Rg<CR> 
+  nnoremap <silent> <leader>F :Rg!<CR> 
 
 " Enable per-command history.
 " CTRL-N and CTRL-P will be automatically bound to next-history and
@@ -177,7 +214,23 @@ Plug 'junegunn/fzf.vim'
 " explicitly bind the keys to down and up in your $FZF_DEFAULT_OPTS.
 let g:fzf_history_dir = '~/.local/share/fzf-history'
 let g:fzf_layout = {'window': 'vertical new'}
+" let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6, 'highlight': 'Todo', 'border': 'sharp' } }
 " }}}
+
+" add preview windows to file and rg commands
+" https://github.com/junegunn/fzf.vim#example-customizing-files-command
+" don't forget to brew install bat
+command! -bang -nargs=? -complete=dir Files
+    \ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', 'cat {}']}, <bang>0)
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+
+"Window swapping
+Plug 'wesQ3/vim-windowswap'
+let g:windowswap_map_keys = 0 "prevent default bindings
+nnoremap <silent> <leader>ss :call WindowSwap#EasyWindowSwap()<CR>
 
 "todo add vim-commentary for commenting
 "Plug 'altercation/vim-colors-solarized' "color theme
@@ -188,10 +241,21 @@ Plug 'rakr/vim-one' "color theme
   if (has("termguicolors"))
     set termguicolors
   endif
-"set background=dark 
+" set background=dark 
  set background=light 
 " }}}
 call plug#end()
+
+" handling setting and unsetting BAT_THEME for fzf.vim
+" not really sure what this does - https://github.com/junegunn/fzf.vim/issues/969#issuecomment-706137418
+augroup update_bat_theme
+    autocmd!
+    autocmd colorscheme * call ToggleBatEnvVar()
+augroup end
+function ToggleBatEnvVar()
+  let $BAT_THEME='OneHalfLight' "light theme
+  " let $BAT_THEME='OneHalfDark' "dark theme
+endfunction
 
 colorscheme one
 
@@ -218,3 +282,11 @@ nmap N Nzz
 
 " Quick way to save file
 nnoremap <leader>w :w<CR>
+
+" helpful commands
+" :verbose imap <command> - list out what happens for a command
+"
+" Setup tips
+" CTags
+" https://galea.medium.com/getting-started-with-ctags-vim-on-macos-87bcb07cf6d
+"ctags -R .
